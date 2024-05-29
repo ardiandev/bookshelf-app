@@ -8,6 +8,9 @@ li {
   list-style: none;
 }
 
+a {
+  color: #fff;
+}
 body {
   width: 100vw;
   min-height: 100vh;
@@ -95,6 +98,26 @@ header {
   font-size: 1rem;
 }
 
+.books-container {
+  display: grid;
+  grid-template-columns: repeat(2, 50%);
+  gap: 10px;
+}
+
+.book-item {
+  border: 1px solid black;
+  padding: 10px;
+  height: 200px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.book-item p {
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
 footer {
   text-align: center;
   padding: 10px;
