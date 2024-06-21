@@ -17,6 +17,63 @@ const saveData = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
+class Book {
+  #key = "book-list";
+
+  data() {
+    const books = localStorage.getItem(this.#key);
+
+    if (!books) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(books);
+    } catch (error) {
+      return console.log("Error parsing data", error);
+    }
+  }
+}
+
+class Display {
+  #bookContainer = document.querySelector(".books-container");
+
+  renderBooks(books) {
+    if (books.length === 0) {
+      return (this.#bookContainer.innerHTML = `<p>There is no book!</p>`);
+    }
+
+    let innerBooks = "";
+
+    console.log("render", books);
+
+    books.forEach(book => {
+      innerBooks += `
+    <div class="book-item" >
+      <div class="book-main-info" >
+        <div class="status-container ${book.status ? "read" : "unread"} " >
+          <p>${book.status ? "Sudah dibaca" : "Belum dibaca"}</p>
+        </div>
+        <p class="book-title" >${book.title}</p>
+        <p>Penulis: ${book.author ? book.author : "-"}</p>
+        <p>Diterbitkan: ${book.year ? book.year : "-"}</p>
+      </div>
+      <div class="book-item-btn-container">
+        <button class="edit-book" data-book="${book.id}" >Edit</button>
+        <button class="delete-book" data-book="${book.id}" >Delete</button>
+      </div>
+
+    </div>
+    `;
+
+      this.#bookContainer.innerHTML = innerBooks;
+    });
+  }
+}
+
+const book = new Book();
+const display = new Display();
+
 const keyBook = () => "book-list";
 
 const addBookDialog = () => {
@@ -145,13 +202,17 @@ const renderAllBooks = (key, container) => {
   books.forEach(book => {
     innerBooks += `
     <div class="book-item" >
-      <p>Judul: ${book.title}</p>
-      <p>Pengarang: ${book.author ? book.author : "-"}</p>
-      <p>Tahun: ${book.year ? book.year : "-"}</p>
-      <p>Sudah dibaca: ${book.status ? "sudah" : "belum"} </p>
+      <div class="book-main-info" >
+        <div class="status-container ${book.status ? "read" : "unread"} " >
+          <p>${book.status ? "Sudah dibaca" : "Belum dibaca"}</p>
+        </div>
+        <p class="book-title" >${book.title}</p>
+        <p>Penulis: ${book.author ? book.author : "-"}</p>
+        <p>Diterbitkan: ${book.year ? book.year : "-"}</p>
+      </div>
       <div class="book-item-btn-container">
-        <button class="edit-book">Edit</button>
-        <button class="delete-book">Delete</button>
+        <button class="edit-book" data-book="${book.id}" >Edit</button>
+        <button class="delete-book" data-book="${book.id}" >Delete</button>
       </div>
 
     </div>
@@ -159,6 +220,32 @@ const renderAllBooks = (key, container) => {
 
     container.innerHTML = innerBooks;
   });
+};
+
+const bookContainer = document.querySelector(".books-container");
+bookContainer.addEventListener("click", event => {
+  let btnEl = event.target;
+
+  if (btnEl.className === "edit-book") {
+    console.log("edit book");
+  } else if (btnEl.className === "delete-book") {
+    console.log("delete book");
+    handleDeleteBook(btnEl);
+  } else {
+    return;
+  }
+});
+
+const handleDeleteBook = btn => {
+  let bookId = +btn.dataset.book;
+
+  let books = book.data();
+
+  let bookIndex = books.findIndex(book => book.id === bookId);
+
+  books.splice(bookIndex, 1);
+
+  display.renderBooks(book.data());
 };
 
 document.addEventListener("DOMContentLoaded", () => {
