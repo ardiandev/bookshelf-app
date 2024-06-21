@@ -32,7 +32,18 @@ class Book {
     localStorage.setItem(this.#key, JSON.stringify(books));
   }
 
-  update() {}
+  update(id, title, author, year, status) {
+    const books = this.data();
+    const bookIndex = books.findIndex(
+      book => parseInt(book.id) === parseInt(id)
+    );
+
+    books[bookIndex].title = title;
+    books[bookIndex].author = author;
+    books[bookIndex].year = year;
+    books[bookIndex].status = status;
+    localStorage.setItem(this.#key, JSON.stringify(books));
+  }
 }
 
 const book = new Book();
@@ -119,12 +130,12 @@ addBookBtn.addEventListener("click", addBookDialog);
 dialogBox.addEventListener("click", event => {
   let btnEl = event.target;
 
-  switch (btnEl.id) {
-    case "add-book":
-      handelSubmitBook();
-      break;
-    default:
-      return;
+  if (btnEl.id === "add-book") {
+    handelSubmitBook();
+  } else if (btnEl.id === "update-book") {
+    handleUpdateBook(btnEl.dataset.id);
+  } else {
+    return;
   }
 });
 
@@ -160,6 +171,17 @@ const handelSubmitBook = () => {
   book.save(newBook);
   renderBooks(book.data());
 };
+
+function handleUpdateBook(id) {
+  const bookForm = document.querySelector("#form-fields");
+  let bookTitle = bookForm["title"].value;
+  let bookAuthor = bookForm["author"].value;
+  let bookYear = bookForm["year"].value;
+  let bookStatus = bookForm["status"].checked;
+
+  book.update(id, bookTitle, bookAuthor, bookYear, bookStatus);
+  renderBooks(book.data());
+}
 
 bookContainer.addEventListener("click", event => {
   let btn = event.target;
@@ -215,7 +237,7 @@ function handleEditBook(id) {
     
     </ul>
     <div class="form-btn-container">
-      <button id="add-book">Submit</button>
+      <button id="update-book" data-id="${id}" >Update</button>
       <button id="cancel-book">Cancel</button>
     </div>
   <form>
