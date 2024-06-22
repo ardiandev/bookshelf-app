@@ -84,10 +84,6 @@ const renderBooks = books => {
   bookContainer.innerHTML = innerBooks;
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderBooks(book.data());
-});
-
 const addBookDialog = () => {
   let innerDialog = `
   <h3>Add Book</h3>
@@ -247,3 +243,61 @@ function handleEditBook(id) {
 
   dialogBox.showModal();
 }
+
+const filterButton = document.querySelector("#filter-read-books");
+filterButton.addEventListener("change", event => {
+  const dropDownValue = event.target.value;
+
+  if (dropDownValue === "all-books") {
+    console.log("all books");
+    renderBooks(book.data());
+  } else if (dropDownValue === "read-books") {
+    renderByStatus(true);
+    console.log("read books");
+  } else {
+    console.log("unread books");
+    renderByStatus(false);
+  }
+});
+
+function renderByStatus(status) {
+  const books = book.data();
+  const filterBooks = books.filter(book => book.status === status);
+  console.log(filterBooks);
+
+  let innerBooks = "";
+
+  filterBooks.forEach(book => {
+    innerBooks += `
+    
+    <div class="book-item" >
+    <div class="book-info-container">
+      <div class="status-container" >
+        <p class="book-status-value ${
+          book.status ? "complete" : "not-complete"
+        }" >${book.status ? "already read" : "unread"}</p>
+      </div>
+      <p>Title: ${book.title}</p>
+      <p>Author: ${book.author ? book.author : "-"}</p>
+      <p>Year: ${book.year ? book.year : "-"}</p>
+    </div>
+    <div class="book-button-container">
+     <button class="edit-book" data-id="${book.id}" >Edit</button>
+     <button class="delete-book" data-id="${book.id}" >Delete</button>
+    </div>
+
+    </div>    
+    `;
+  });
+
+  bookContainer.innerHTML = innerBooks;
+}
+
+function resetFilter() {
+  filterButton.value = "all-books";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderBooks(book.data());
+  resetFilter();
+});
