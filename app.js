@@ -138,8 +138,6 @@ dialogBox.addEventListener("click", event => {
 const handelSubmitBook = () => {
   const bookForm = document.querySelector("#form-fields");
 
-  console.log("handle submit book");
-
   let bookId = +new Date();
   let bookTitle = bookForm.title.value;
   let bookAuthor = bookForm.author.value;
@@ -149,7 +147,6 @@ const handelSubmitBook = () => {
   const warningTitle = document.querySelector(".warning-title");
 
   if (!bookTitle) {
-    console.log("title cannot empty");
     warningTitle.textContent = "Title cannot empty!";
     return event.preventDefault();
   }
@@ -187,7 +184,6 @@ bookContainer.addEventListener("click", event => {
   } else if (btn.className === "edit-book") {
     handleEditBook(bookId);
   } else {
-    console.log("not valid area");
     return;
   }
 });
@@ -249,13 +245,10 @@ filterButton.addEventListener("change", event => {
   const dropDownValue = event.target.value;
 
   if (dropDownValue === "all-books") {
-    console.log("all books");
     renderBooks(book.data());
   } else if (dropDownValue === "read-books") {
     renderByStatus(true);
-    console.log("read books");
   } else {
-    console.log("unread books");
     renderByStatus(false);
   }
 });
@@ -263,7 +256,6 @@ filterButton.addEventListener("change", event => {
 function renderByStatus(status) {
   const books = book.data();
   const filterBooks = books.filter(book => book.status === status);
-  console.log(filterBooks);
 
   let innerBooks = "";
 
@@ -297,7 +289,46 @@ function resetFilter() {
   filterButton.value = "all-books";
 }
 
+const searchBook = document.querySelector("#search-book");
+searchBook.addEventListener("input", event => {
+  let valueEl = event.target.value.toLowerCase();
+
+  const books = book.data();
+
+  const filterBooks = books.filter(book =>
+    book.title.toLowerCase().includes(valueEl)
+  );
+
+  let innerBooks = "";
+
+  filterBooks.forEach(book => {
+    innerBooks += `
+    
+    <div class="book-item" >
+    <div class="book-info-container">
+      <div class="status-container" >
+        <p class="book-status-value ${
+          book.status ? "complete" : "not-complete"
+        }" >${book.status ? "already read" : "unread"}</p>
+      </div>
+      <p>Title: ${book.title}</p>
+      <p>Author: ${book.author ? book.author : "-"}</p>
+      <p>Year: ${book.year ? book.year : "-"}</p>
+    </div>
+    <div class="book-button-container">
+     <button class="edit-book" data-id="${book.id}" >Edit</button>
+     <button class="delete-book" data-id="${book.id}" >Delete</button>
+    </div>
+
+    </div>    
+    `;
+  });
+
+  bookContainer.innerHTML = innerBooks;
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   renderBooks(book.data());
   resetFilter();
+  searchBook.value = "";
 });
