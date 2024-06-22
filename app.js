@@ -325,6 +325,7 @@ searchBook.addEventListener("input", event => {
   });
 
   bookContainer.innerHTML = innerBooks;
+  resetFilter();
 });
 
 document.addEventListener("DOMContentLoaded", () => {
