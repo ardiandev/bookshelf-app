@@ -101,6 +101,7 @@ const addBookDialog = () => {
       <li>
         <label for="year">Year</label>
         <input type="number" name="year" id="year" />
+        <p class="warning-year"></p>
       </li>
       <li>
         <label for="status">Sudah dibaca</label>
@@ -130,6 +131,8 @@ dialogBox.addEventListener("click", event => {
     handelSubmitBook();
   } else if (btnEl.id === "update-book") {
     handleUpdateBook(btnEl.dataset.id);
+  } else if (btnEl.id === "cancel-book") {
+    return dialogBox.close();
   } else {
     return;
   }
@@ -151,6 +154,15 @@ const handelSubmitBook = () => {
     return event.preventDefault();
   }
 
+  const warningYear = document.querySelector(".warning-year");
+
+  if (!/^\d+$/.test(bookYear)) {
+    warningYear.textContent = "Year must be numbers!";
+    return event.preventDefault();
+  }
+
+  warningYear.textContent = "";
+
   warningTitle.textContent = "";
 
   let newBook = {
@@ -158,7 +170,7 @@ const handelSubmitBook = () => {
     title: bookTitle,
     author: bookAuthor,
     year: bookYear,
-    status: bookStatus
+    isComplete: bookStatus
   };
 
   book.save(newBook);
@@ -255,7 +267,7 @@ filterButton.addEventListener("change", event => {
 
 function renderByStatus(status) {
   const books = book.data();
-  const filterBooks = books.filter(book => book.status === status);
+  const filterBooks = books.filter(book => book.isComplete === status);
 
   let innerBooks = "";
 
@@ -266,10 +278,10 @@ function renderByStatus(status) {
     <div class="book-info-container">
       <div class="status-container" >
         <p class="book-status-value ${
-          book.status ? "complete" : "not-complete"
+          book.isComplete ? "complete" : "not-complete"
         }" >${book.status ? "already read" : "unread"}</p>
       </div>
-      <p>Title: ${book.title}</p>
+      <p>Title: ${book.isComplete}</p>
       <p>Author: ${book.author ? book.author : "-"}</p>
       <p>Year: ${book.year ? book.year : "-"}</p>
     </div>
