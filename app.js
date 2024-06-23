@@ -299,6 +299,10 @@ searchBook.addEventListener("input", event => {
     book.title.toLowerCase().includes(valueEl)
   );
 
+  if (!filterBooks.length) {
+    return (bookContainer.innerHTML = `<p>There is no book.</p>`);
+  }
+
   let innerBooks = "";
 
   filterBooks.forEach(book => {
